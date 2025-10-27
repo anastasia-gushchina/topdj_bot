@@ -1,0 +1,28 @@
+stages:
+  - deploy
+
+
+.standard-rules:
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+before_script:
+  - git config --global user.name "${GITLAB_USER_NAME}"
+  - git config --global user.email "${GITLAB_USER_EMAIL}"
+ 
+
+deploy-prod:
+  stage: deploy
+  environment:
+    name: topdj_bot
+    url: https://topdj_bot.com
+  when: manual
+  script:
+    - git config --global --add safe.directory /opt/topdj_bot
+    - cd /opt/topdj
+    - git fetch --all
+    - git reset --hard origin/$CI_COMMIT_REF_NAME
+    - git log -1
+    - git pull origin $CI_COMMIT_BRANCH
+    - docker compose -f docker-compose.deploy.yml up -d web --build --force-recreate --remove-orphans
+    - echo "bot deploy finish!"

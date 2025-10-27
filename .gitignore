@@ -1,0 +1,11 @@
+*.env
+*.pyc
+*.mo
+.idea
+celerybeat-schedule
+pyproject.toml
+__pycache__
+venv
+data
+test.ipynb
+/*packs

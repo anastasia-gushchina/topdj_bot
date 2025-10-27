@@ -1,0 +1,74 @@
+version: "3.9"
+
+x-variables: &variables
+  environment:
+    BOT_TOKEN: ${BOT_TOKEN}
+    BOT_PAYMENTS_TOKEN: ${BOT_PAYMENTS_TOKEN}
+    BOT_WEBHOOK_SECRET: ${BOT_WEBHOOK_SECRET}
+    BOT_WEBHOOK_URL: ${BOT_WEBHOOK_URL}
+    BOT_WEBHOOK_PATH: ${BOT_WEBHOOK_PATH:-"/telegram/bot"}
+    REDIS_URL: ${REDIS_URL}
+    DEBUG: ${DEBUG}
+    DB_URL: ${DB_URL}
+    FILES_PATH: ${FILES_PATH:-"packs"}
+
+services:
+
+  web: 
+    &base
+    restart: always
+    command: web
+    container_name: ${ENVIRONMENT}_telegram_bot_service
+    build:
+      context: .
+      dockerfile: config/Dockerfile
+    volumes:
+      # cache
+      - ./cache/pip:/root/.cache/pip
+      - ./cache/apt:/var/cache/apt
+      # это ничего не монтирует, но создает внутри контейнера папку,
+      - /app/venv
+    <<: *variables
+    env_file:
+      - .env
+    ports:
+      - ${BACK_PORT}:8000
+    networks:
+      - general
+    depends_on:
+      - postgres
+      - redis
+  
+  postgres:
+    image: postgres:15-alpine
+    command: postgres -c 'max_connections=500'
+    environment:
+      POSTGRES_DB: topdj_bot
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: tkt0z1sfa7fo25ajho508rx2
+      PG_USER: postgres
+      PG_PORT: 5432
+      PG_DB: topdj_bot
+    ports:
+      - 5432:5432
+    volumes:
+      - ./data/pgdata:/var/lib/postgresql/data
+    networks:
+      - general
+
+  redis:
+    restart: always
+    image: redis:alpine
+    container_name: ${ENVIRONMENT}_telegram_bot_redis
+    sysctls:
+      - net.core.somaxconn=512
+    command: redis-server --requirepass "${REDIS_PASSWORD}"
+    volumes:
+      - ./data/redis-data:/var/lib/redis
+      - ./data/redis-data/redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - general
+
+networks:
+  general:
+    name: ${ENVIRONMENT}-net
