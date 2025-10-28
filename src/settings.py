@@ -7,12 +7,12 @@ class Settings(BaseSettings):
     debug: bool | None = False
     environment: str = "dev"
     is_autotest: bool = False
-    redis_url: str
+    redis_url: str = ""
     redis_user_ttl: int = 60 * 60 * 24 * 60  # 60 days
-    redis_password: str
-    redis_host: str
-    redis_port: str
-    redis_db: int
+    redis_password: str = ""
+    redis_host: str = ""
+    redis_port: str = ""
+    redis_db: int = 0
 
     bot_token: str | None = None
     bot_payments_token: str | None = None
