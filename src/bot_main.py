@@ -14,27 +14,18 @@ from src.settings import settings
 
 logger = logging.getLogger(__name__)
 
+bot = aiogram.Bot(token=settings.bot_token)
+dp = aiogram.Dispatcher(
+    bot=bot,
+    storage=RedisStorage.from_url(settings.redis_url),
+)
 
-def get_redis():
-    if settings.environment == "dev":
-        redis = StrictRedis(host=settings.redis_host, port=settings.redis_port, db=settings.redis_db,
-                            password=settings.redis_password)
-    else:
-        redis = StrictRedis(unix_socket_path=settings.redis_url)
-    return redis
-
-
-redis = get_redis()
+redis = StrictRedis(host=settings.redis_host, port=settings.redis_port, db=settings.redis_db,
+                    password=settings.redis_password)
 if redis.ping():
     logger.info('Redis is accepted to connections')
 else:
     logger.error('Can not connect to redis')
-
-bot = aiogram.Bot(token=settings.bot_token)
-dp = aiogram.Dispatcher(
-        bot=bot,
-        storage=RedisStorage(redis),
-    )
 
 
 webhook_router = APIRouter()
