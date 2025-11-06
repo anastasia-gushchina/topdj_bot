@@ -10,7 +10,7 @@ case "$1" in
     web)
         echo starting server...
         alembic upgrade head
-        exec uvicorn main:app --host 0.0.0.0 --port 8000 --loop=asyncio --workers=2
+        exec uvicorn main:app --host 0.0.0.0 --port 8000 --loop=asyncio --workers=1
     ;;
     web_dev)
         echo starting server...

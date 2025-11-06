@@ -22,9 +22,12 @@ class UsersService(BaseService):
 
         return Users(**result)
 
-    async def check_and_create(self, schema: CreateUserSchema, redis: Redis):
-        user_key = f"user_{schema.tg_id}"
-        has_user = redis.get(user_key)
+    async def check_and_create(self, schema: CreateUserSchema, redis: Redis | None):
+        if redis:
+            user_key = f"user_{schema.tg_id}"
+            has_user = redis.get(user_key)
+        else:
+            has_user = False
         if has_user:
             logger.info("User already set to redis")
             return

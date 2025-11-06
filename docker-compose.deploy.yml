@@ -35,6 +35,8 @@ services:
       - ${BACK_PORT}:8000
     networks:
       - general
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
 
 networks:

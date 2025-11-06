@@ -19,13 +19,16 @@ dp = aiogram.Dispatcher(
     bot=bot,
     storage=RedisStorage.from_url(settings.redis_url),
 )
-
-redis = StrictRedis(host=settings.redis_host, port=settings.redis_port, db=settings.redis_db,
-                    password=settings.redis_password)
-if redis.ping():
-    logger.info('Redis is accepted to connections')
-else:
-    logger.error('Can not connect to redis')
+redis = None
+try:
+    redis = StrictRedis(host=settings.redis_host, port=settings.redis_port, db=settings.redis_db,
+                        password=settings.redis_password, socket_connect_timeout=600)
+    if redis.ping():
+        logger.info('Redis is accepted to connections')
+    else:
+        logger.error('Can not connect to redis')
+except Exception as e:
+    logger.error(f"Can not connect to redis: {e}")
 
 
 webhook_router = APIRouter()
