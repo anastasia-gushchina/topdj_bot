@@ -34,8 +34,8 @@ DNB_packs: list = [
 ]
 
 HOUSE_packs: list = [
-    MusicPack(3, "Base House", 90*100, "base_house.zip", "", 38),
-    MusicPack(4, "Tech House", 94*100, "tech_house.zip", "", 50)
+    MusicPack(3, "Base House", 3000*100, "base_house.zip", "", 38),
+    MusicPack(4, "Tech House", 5000*100, "tech_house.zip", "", 50)
 
 ]
 
