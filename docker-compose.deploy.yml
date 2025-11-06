@@ -30,26 +30,12 @@ services:
       - /app/venv
     <<: *variables
     env_file:
-      - .env
+      - deploy.env
     ports:
       - ${BACK_PORT}:8000
     networks:
       - general
-    depends_on:
-      - redis
-  
-  redis:
-    restart: always
-    image: redis:alpine
-    container_name: ${ENVIRONMENT}_telegram_bot_redis
-    sysctls:
-      - net.core.somaxconn=512
-    command: redis-server --requirepass "${REDIS_PASSWORD}"
-    volumes:
-      - ./data/redis-data:/var/lib/redis
-      - ./data/redis-data/redis.conf:/usr/local/etc/redis/redis.conf
-    networks:
-      - general
+
 
 networks:
   general:
