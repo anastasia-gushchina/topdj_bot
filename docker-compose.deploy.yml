@@ -20,7 +20,7 @@ services:
     command: web
     container_name: ${ENVIRONMENT}_telegram_bot_service
     build:
-      context: .
+      context: /www/wwwroot/topdj
       dockerfile: config/Dockerfile
     volumes:
       # cache
@@ -30,7 +30,7 @@ services:
       - /app/venv
     <<: *variables
     env_file:
-      - deploy.env
+      - .env
     ports:
       - ${BACK_PORT}:8000
     networks:
