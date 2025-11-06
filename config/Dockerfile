@@ -15,7 +15,7 @@ RUN /bin/bash -c "source venv/bin/activate" && \
     pip install --upgrade setuptools && pip install -r /requirements/base.txt
 
 # Copy source code
-COPY . .
+COPY --chmod=755 . .
 
 # Run entrypoint
 ENTRYPOINT ["/app/config/docker-entrypoint.sh"]
