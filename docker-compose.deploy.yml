@@ -23,10 +23,8 @@ services:
       context: /www/wwwroot/topdj
       dockerfile: config/Dockerfile
     volumes:
-      # cache
       - ./cache/pip:/root/.cache/pip
       - ./cache/apt:/var/cache/apt
-      # это ничего не монтирует, но создает внутри контейнера папку,
       - /app/venv
     <<: *variables
     env_file:
@@ -42,3 +40,4 @@ services:
 networks:
   general:
     name: ${ENVIRONMENT}-net
+    external: true
