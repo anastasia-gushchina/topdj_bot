@@ -59,17 +59,17 @@ class BaseService:
             return [r.to_dict() for r in results]
 
     @override
-    async def update(self, id_: int, schema: dict) -> dict:
+    async def update(self, filter_: dict[str, Any], schema: dict) -> dict:
         stmt = (
             update(self.db_model)
-            .where(self.db_model.id == id_)
             .values(**schema)
             .returning(self.db_model)
         )
+        update_stmt = self._prepare_query_str(stmt, filter_=filter_)
         async with self.db_session() as session:
             async with session.begin():
                 try:
-                    result = (await session.execute(stmt)).scalar_one()
+                    result = (await session.execute(update_stmt)).scalars()
                     await session.commit()
                 except NoResultFound as error:
                     raise NotFoundError(error)

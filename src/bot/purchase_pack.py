@@ -12,6 +12,7 @@ from src.services.users import UsersService
 from src.schemas.users import CreateUserSchema
 from logging import Logger
 from src.bot_main import redis
+from src.utils.tg_messages import send_tg_message
 
 
 logger = Logger(__name__)
@@ -24,6 +25,7 @@ class Form(StatesGroup):
     pack_name = State()
     pack_info = State()
     new_invoice = State()
+    create_new_pack = State()
 
 
 async def start(message: types.Message, state: FSMContext):
@@ -31,6 +33,8 @@ async def start(message: types.Message, state: FSMContext):
         [InlineKeyboardButton(text=category.value, callback_data=f"pack_category_{category.value}")]
         for category in Categories
     ]
+    inline_kb_list.append([InlineKeyboardButton(text="Хочу заказать пак в другом жанре!",
+                                                callback_data="create_new_pack")])
     inline_keyboard = InlineKeyboardMarkup(inline_keyboard=inline_kb_list)
     create_user = CreateUserSchema(username=message.from_user.username,
                                    name=message.from_user.first_name,
@@ -53,16 +57,39 @@ async def pack_name(callback: types.CallbackQuery, state: FSMContext):
         [InlineKeyboardButton(text=pack.human_name, callback_data=f"pack_name_{pack.name}")]
         for _, pack in packs_dict.items()
     ]
+    inline_kb_list.append([InlineKeyboardButton(text="Хочу заказать другой пак!",
+                                                callback_data="create_new_pack")])
     inline_keyboard = InlineKeyboardMarkup(inline_keyboard=inline_kb_list)
 
-    await callback.message.answer(text=f"Вот доступные паки в категории {category_name}",
-                                  reply_markup=inline_keyboard)
+    desc = f"Вот доступные паки в категории {category_name}. Во всех наших паках уникальные наборы треков.\
+    \n\nА если тут нет нужного тебе пака, то ты всегда можешь заказать создание нового"
+    await callback.message.answer(text=desc, reply_markup=inline_keyboard)
     await state.set_state(Form.pack_name)
 
 
 @purchase_router.message(Command("start"))
 async def start_bot(message: types.Message, state: FSMContext):
     await start(message, state)
+
+
+@purchase_router.callback_query(F.data.startswith("create_new_pack"))
+async def create_new_pack(callback: types.CallbackQuery, state: FSMContext):
+    await state.set_state(Form.create_new_pack)
+    message = "Опиши пак, который хочешь купить:\n\
+    1. В каком он должен быть жанре или поджанре\n\
+    2. Сколько треков в нём должно быть\n\
+    3. Любые комментарии на счёт пака, которые ты считаешь важными."
+    await callback.message.answer(text=message)
+
+
+@purchase_router.message(Form.create_new_pack)
+async def get_new_pack_info(message: types.Message, state: FSMContext):
+    user_request = message.text
+    username = message.from_user.username
+    message_text = f"Пользователь @{username} описал особый пак, который хотел бы купить:\n\n {user_request}"
+    await send_tg_message(message_text)
+    await message.answer(text="✅ Получили твои пожелания, когда пак будет готов наш администратор сообщит об этом")
+    await state.clear()
 
 
 @purchase_router.callback_query(F.data.startswith("pack_name_"))

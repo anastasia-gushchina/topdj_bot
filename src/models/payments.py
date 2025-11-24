@@ -1,6 +1,6 @@
 from src.database import Base
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, Integer, UniqueConstraint, inspect
+from sqlalchemy import String, Integer, inspect
 from datetime import datetime
 from sqlalchemy import TIMESTAMP, func
 
@@ -8,13 +8,6 @@ from sqlalchemy import TIMESTAMP, func
 class PaymentsModel(Base):
     __tablename__ = "payments"
     __mapper_args__ = {"eager_defaults": True}
-    __table_args__ = (
-        UniqueConstraint(
-            "user_id",
-            "transaction_id",
-            name="chat_for_user",
-        ),
-    )
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[str] = mapped_column(String(length=32), index=True, nullable=False)

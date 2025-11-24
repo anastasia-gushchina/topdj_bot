@@ -27,15 +27,16 @@ class Categories(Enum):
 
 
 DNB_packs: list = [
-    MusicPack(1, "Mainstream DnB", 95*100, "mainstream.zip",
-              "Drum&base микс, в котором собраны лучшие треки в жанре mainstream",
-              30),
-    MusicPack(2, "Test", 100*100, "test_pack.zip", "Тестовый пак с очень хорошей музыкой, вам она точно понравится", 1)
+    MusicPack(1, "Drum&Base 50", 5000*100, "ДНБ 50.zip",
+              "Drum&base pack, в котором собраны треки из всех поджанров",
+              50),
+    MusicPack(2, "Drum&Base 30", 3000*100, "ДНБ 30.zip",
+              "Drum&base pack, в котором собраны треки из всех поджанров", 30)
 ]
 
 HOUSE_packs: list = [
-    MusicPack(3, "Base House", 3000*100, "base_house.zip", "", 38),
-    MusicPack(4, "Tech House", 5000*100, "tech_house.zip", "", 50)
+    MusicPack(3, "House 30", 3000*100, "Хаус 30.zip", "", 30),
+    MusicPack(4, "House 50", 5000*100, "Хаус 50.zip", "", 50)
 
 ]
 

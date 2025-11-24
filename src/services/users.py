@@ -45,9 +45,9 @@ class UsersService(BaseService):
 
         return [Users(**r) for r in results]
 
-    async def update(self, id_: str | int, schema: UpdateUserSchema) -> Users:
-        logger.info(f'Updating user: {id_}.')
-        result: dict[str, Any] = await super().update(id_, schema.model_dump(exclude_none=True, exclude_unset=True))
+    async def update(self, filter_: dict[str, Any], schema: UpdateUserSchema) -> Users:
+        logger.info(f'Updating user: {filter_}.')
+        result: dict[str, Any] = await super().update(filter_, schema.model_dump(exclude_none=True, exclude_unset=True))
 
         return Users(**result)
 

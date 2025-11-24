@@ -1,8 +1,7 @@
 import logging
 from typing import Any
 
-from asyncpg import UniqueViolationError
-from sqlalchemy import select, update
+from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound, IntegrityError, OperationalError, InternalError, ProgrammingError, \
     StatementError
 
@@ -10,7 +9,7 @@ from src.schemas.payments import CreatePaymentsSchema, PaymentsSchema, UpdatePay
 from src.models.payments import PaymentsModel
 
 from src.services.base import BaseService
-from src.services.exceptions import NotFoundError, SqlError, UniqueRecordError
+from src.services.exceptions import NotFoundError, SqlError
 
 logger = logging.getLogger("category-cat:service")
 
@@ -23,32 +22,11 @@ class PaymentService(BaseService):
         logger.info(f"Payment was created with id: {result.get('id')}.")
         return PaymentsSchema(**result)
 
-    async def update(self, user_id: int, schema: UpdatePaymentsSchema) -> PaymentsSchema:
+    async def update(self, filter_: dict[str, Any], schema: UpdatePaymentsSchema) -> PaymentsSchema:
         logger.info("Update payment.")
-        schema = schema.model_dump(exclude_none=True)
-        user_id = str(user_id)
-        stmt = (
-            update(PaymentsModel)
-            .where(PaymentsModel.user_id == user_id)
-            .values(**schema)
-            .returning(PaymentsModel)
-        )
-        async with self.db_session() as session:
-            async with session.begin():
-                try:
-                    result = (await session.execute(stmt)).scalar_one()
-                    await session.commit()
-                except NoResultFound as error:
-                    raise NotFoundError(error)
-                except (IntegrityError, OperationalError, InternalError, ProgrammingError, StatementError) as error:
-                    if isinstance(error.orig.__cause__, UniqueViolationError):
-                        raise UniqueRecordError(error)
-                    raise SqlError(error)
+        result: dict[str, Any] = await super().update(filter_, schema.model_dump(exclude_none=True, exclude_unset=True))
 
-            return result.to_dict()
-        return PaymentsSchema(
-            **await super().update(1, schema.model_dump(exclude_none=True, exclude_unset=True), stmt=stmt)
-        )
+        return PaymentsSchema(**result)
 
     async def get(self, payment_id: int) -> PaymentsSchema:
         logger.info(f"Get payment by payment id {payment_id}.")

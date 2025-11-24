@@ -1,7 +1,6 @@
 
 import logging
 from urllib.parse import urljoin
-import requests
 from aiogram import F, Router, Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import (
@@ -16,39 +15,23 @@ from src.schemas.payments import UpdatePaymentsSchema, PaymentStatus
 from src.services.payments import PaymentService
 from src.models.music_pack import MusicPack, get_pack_by_name_or_category
 from src.settings import settings
+from src.utils.tg_messages import send_tg_message
 
 logger = logging.Logger(__name__)
 
 payment_result_router = Router(name="payment_result")
 
 
-async def send_tg_message(message: str):
-
-    bot_token = settings.bot_token
-
-    # send only to tg_bot, not for users
-    chat_id = settings.notification_admin_chat_id
-    error = False
-
-    try:
-        url = f"https://api.telegram.org/bot{str(bot_token)}/sendMessage"
-        params = {
-            "chat_id": str(chat_id),
-            "parse_mode": "Markdown",
-            "text": message
-            }
-        requests.get(url, params=params)
-    except Exception as e:
-        error = True
-        logger.error(f"Can not send notification message: {e}")
-    return "ERROR" if error else "OK"
-
-
 @payment_result_router.pre_checkout_query()
 async def pre_checkout_query(pre_checkout_query: PreCheckoutQuery, bot: Bot):
     await bot.answer_pre_checkout_query(pre_checkout_query.id, ok=True)
     update_schema = UpdatePaymentsSchema(status=PaymentStatus.transaction_created, transaction_id=pre_checkout_query.id)
-    await PaymentService().update(pre_checkout_query.from_user.id, schema=update_schema)
+    try:
+        filter_ = {"user_id": pre_checkout_query.from_user.id,
+                   "status": PaymentStatus.payment_started}
+        await PaymentService().update(filter_, schema=update_schema)
+    except Exception:
+        await send_tg_message(f"Не получилось перевести статус платежа: {filter_}")
 
 
 async def incorrect_db_condition(message: Message):
@@ -80,4 +63,4 @@ async def successful_payment(message: Message, state: FSMContext):
     # protect content to document
     path_to_doc = urljoin(settings.files_path, pack.file_name)
     doc = FSInputFile(path=path_to_doc)
-    await message.answer_document(doc)
+    await message.answer_document(doc, protect_content=True)
