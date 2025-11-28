@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     bot_webhook_path: str = "/telegram/bot"
     bot_webhook_secret: str | None = None
     notification_admin_chat_id: int = 1725617264
+    admins_ids: list[int] = [1725617264]
     error_chat_id: int = 1725617264
 
     files_path: str = ""

@@ -13,6 +13,7 @@ from fastapi.openapi.docs import (
 from src.bot_main import bot_startup, bot_shutdown, webhook_router, dp as bot_dp
 from src.bot.payment_result import payment_result_router
 from src.bot.purchase_pack import purchase_router
+from src.bot.admin_states import admin_router
 from src.settings import settings
 
 
@@ -36,6 +37,7 @@ app = FastAPI(title="Telegram bot service", version=VERSION, lifespan=lifespan, 
 
 bot_dp.include_router(payment_result_router)
 bot_dp.include_router(purchase_router)
+bot_dp.include_router(admin_router)
 
 
 app.add_middleware(

@@ -1,5 +1,3 @@
-version: "3.9"
-
 x-variables: &variables
   environment:
     BOT_TOKEN: ${BOT_TOKEN}
@@ -28,6 +26,8 @@ services:
       - ./cache/apt:/var/cache/apt
       # это ничего не монтирует, но создает внутри контейнера папку,
       - /app/venv
+      - .:/app
+
     <<: *variables
     env_file:
       - .env

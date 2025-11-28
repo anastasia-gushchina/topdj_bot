@@ -36,7 +36,7 @@ class PaymentService(BaseService):
         query_str = select(self.db_model).where(PaymentsModel.user_id == user_id)
         async with self.db_session() as session:
             try:
-                result = (await session.execute(query_str)).scalar_one()
+                result = (await session.execute(query_str)).scalars()[-1]
             except NoResultFound as error:
                 raise NotFoundError(error)
             except (IntegrityError, OperationalError, InternalError, ProgrammingError, StatementError) as error:

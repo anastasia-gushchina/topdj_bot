@@ -10,8 +10,10 @@ class MusicPack:
     file_name: str
     description: str
     track_count: int
+    document_id: str | None
 
-    def __init__(self, id: int, human_name: str, cost: int, file_name: str, description: str, track_count: int):
+    def __init__(self, id: int, human_name: str, cost: int, file_name: str, description: str, track_count: int,
+                 document_id: str | None = None):
         '''cost указывается и сохраняется в копейках'''
         self.human_name = human_name
         self.cost = cost
@@ -19,6 +21,7 @@ class MusicPack:
         self.name = self.human_name.lower().replace(" ", "_")
         self.description = description
         self.track_count = track_count
+        self.document_id = document_id
 
 
 class Categories(Enum):
@@ -28,15 +31,18 @@ class Categories(Enum):
 
 DNB_packs: list = [
     MusicPack(1, "Drum&Base 50", 5000*100, "ДНБ 50.zip",
-              "Drum&base pack, в котором собраны треки из всех поджанров",
-              50),
+              "Drum&base pack, в котором собраны треки из всех поджанров", 50,
+              "BQACAgIAAxkBAAIBFWkoSbh0orWOnZSRB2bqloIvlfeJAAI8iwACY5YgSSFK68Bp8AcrNgQ"),
     MusicPack(2, "Drum&Base 30", 3000*100, "ДНБ 30.zip",
-              "Drum&base pack, в котором собраны треки из всех поджанров", 30)
+              "Drum&base pack, в котором собраны треки из всех поджанров", 30,
+              "BQACAgIAAxkBAAIBFGkoSbiCpkMJe30v7VJSxnXuHD9RAAI7iwACY5YgSRlv3OjWodhLNgQ")
 ]
 
 HOUSE_packs: list = [
-    MusicPack(3, "House 30", 3000*100, "Хаус 30.zip", "", 30),
-    MusicPack(4, "House 50", 5000*100, "Хаус 50.zip", "", 50)
+    MusicPack(3, "House 30", 3000*100, "Хаус 30.zip", "", 30,
+              "BQACAgIAAxkBAAIBGmkoa4p5_MhvGRuAye9O9lqIePBRAAI_iwACY5YgSfyRoVFkKcDdNgQ"),
+    MusicPack(4, "House 50", 5000*100, "Хаус 50.zip", "", 50,
+              "BQACAgIAAxkBAAIBG2koa4rtjLqKd8cZ0Mksmehe-sCTAAJCiwACY5YgSfOIsUsXyYEvNgQ")
 
 ]
 

@@ -1,5 +1,3 @@
-version: "3.9"
-
 x-variables: &variables
   environment:
     BOT_TOKEN: ${BOT_TOKEN}
@@ -18,7 +16,7 @@ services:
     &base
     restart: always
     command: web
-    container_name: ${ENVIRONMENT}_telegram_bot_service
+    container_name: ${ENVIRONMENT}_telegram_bot_service_v2
     build:
       context: /www/wwwroot/topdj
       dockerfile: config/Dockerfile
@@ -26,6 +24,7 @@ services:
       - ./cache/pip:/root/.cache/pip
       - ./cache/apt:/var/cache/apt
       - /app/venv
+      - .:/app
     <<: *variables
     env_file:
       - .env

@@ -17,7 +17,7 @@ from src.utils.tg_messages import send_tg_message
 
 logger = Logger(__name__)
 
-purchase_router = Router(name="test")
+purchase_router = Router(name="purchase_pack")
 
 
 class Form(StatesGroup):
@@ -135,7 +135,7 @@ async def start_buy(callback: types.CallbackQuery, state: FSMContext):
         prices=[pack_price],
         start_parameter="music_pack_payment",
         payload="pack-invoice-payload")
-    logger.error(invoice.dict())
+    logger.debug(invoice.dict())
     new_payment = CreatePaymentsSchema(user_id=str(callback.from_user.id),
                                        status=PaymentStatus.payment_started,
                                        transaction_id=None,
